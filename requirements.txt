@@ -2,5 +2,5 @@ streamlit
 numpy
 opencv-python
 keras
-tensorflow
+tensorflow-cpu==2.12.0
 Pillow
