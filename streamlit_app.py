@@ -16,8 +16,8 @@ import os
 from keras.models import load_model
 from PIL import Image
 import string
-from utils.center_align import add_padding
-from utils.image_straighten import deskew, unshear
+from utils.centerimage import add_padding
+from utils.imageprocessing import deskew, unshear
 from utils.segmentation import lineSegment, wordSegment, fitToSize, findCapPoints, baselines, histogram, visualize, segmentCharacters
 
 # Set page config
@@ -26,7 +26,7 @@ st.set_page_config(page_title="Handwritten Letter Recognition", layout="centered
 # Load model
 @st.cache_resource
 def load_model_once():
-    return load_model("model/Mnist1L_5Conv.h5")
+    return load_model("model/Model.h5")
 
 model = load_model_once()
 letter_map = {v: k for k, v in dict(zip(string.ascii_lowercase, range(1, 27))).items()}
@@ -56,7 +56,7 @@ if uploaded_file:
 
         st.subheader("Segmented Characters and Predictions")
 
-         predicted_sentence = ""
+        predicted_sentence = ""
 
         for img in wordImgs:
             predicted_word = ""  # Accumulate characters for one word

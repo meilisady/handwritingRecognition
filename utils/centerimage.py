@@ -36,7 +36,7 @@ def add_padding(img, pad_l, pad_t, pad_r, pad_b):
 
 
 images = []
-folder='/content/drive/MyDrive/CV/result/characters/'
+folder='result/characters/'
 for filename in os.listdir(folder):
     img = cv2.imread(os.path.join(folder,filename),0)
     th, a = cv2.threshold(img, 127, 255,cv2.THRESH_OTSU)
@@ -51,6 +51,6 @@ for filename in os.listdir(folder):
         cropped_image = a[y1:y2, x1:x2]
         cropped_image=cv2.resize(cropped_image,(20,20))
         padded_image = add_padding(cropped_image, 4, 4, 4, 4)
-        cv2.imwrite('/content/drive/MyDrive/CV/result/resized_images/'+filename,padded_image)
+        cv2.imwrite('result/resized_images/'+filename,padded_image)
 
 print("Images resized and saved into designated folder")

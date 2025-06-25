@@ -135,64 +135,56 @@ def lineSegment(img):
 
 # In[baselines]:
 ##******************************************************************************#
-def baselines(letter2, upoints, dpoints):
-##-------------------------Creating upper baseline-------------------------------##
-    colu = []
-    for i in range(len(upoints)):
-        colu.append(upoints[i][1])
-
+def baselines(letter2, upoints, dpoints, letterGray, h, w):
+    ##-------------------------Creating upper baseline-------------------------------##
+    colu = [pt[1] for pt in upoints]
     maxyu = max(colu)
     minyu = min(colu)
     avgu = (maxyu + minyu) // 2
     meanu = np.around(np.mean(colu)).astype(int)
-    print('Upper:: Max, min, avg, mean:: ',maxyu, minyu, avgu, meanu)
+    print('Upper:: Max, min, avg, mean:: ', maxyu, minyu, avgu, meanu)
 
-##-------------------------------------------------------------------------------##
-##-------------------------Creating lower baseline process 1--------------------------##
-    cold = []
-    for i in range(len(dpoints)):
-        cold.append(dpoints[i][1])
-
+    ##-------------------------Creating lower baseline process 1----------------------##
+    cold = [pt[1] for pt in dpoints]
     maxyd = max(cold)
     minyd = min(cold)
     avgd = (maxyd + minyd) // 2
     meand = np.around(np.mean(cold)).astype(int)
-    print('Lower:: Max, min, avg, mean:: ',maxyd, minyd, avgd, meand)
+    print('Lower:: Max, min, avg, mean:: ', maxyd, minyd, avgd, meand)
 
-##-------------------------------------------------------------------------------##
-##-------------------------Creating lower baseline process 2---------------------------##
+    ##-------------------------Creating lower baseline process 2----------------------##
     cn = []
-    count = 0
-
     for i in range(h):
-        for j in range(w):
-            if(letterGray[i,j] == 255):
-                count+=1
-        if(count != 0):
-            cn.append(count)
-            count = 0
+        cnt = np.count_nonzero(letterGray[i, :] == 255)
+        if cnt != 0:
+            cn.append(cnt)
+
+    if len(cn) == 0:
+        raise ValueError("No white pixels found in letterGray.")
+
     maxindex = cn.index(max(cn))
-    print('Max pixels at: ',maxindex)
+    print('Max pixels at: ', maxindex)
 
-##------------------Printing upper and lower baselines-----------------------------##
-
-    cv.line(letter2,(0,meanu),(w,meanu),(255,0,0),2)
-    lb = 0
-    if(maxindex > meand):
+    ##------------------Printing upper and lower baselines-----------------------------##
+    cv2.line(letter2, (0, meanu), (w, meanu), (255, 0, 0), 2)
+    if maxindex > meand:
         lb = maxindex
-        cv.line(letter2,(0,maxindex),(w,maxindex),(255,0,0),2)
+        cv2.line(letter2, (0, maxindex), (w, maxindex), (255, 0, 0), 2)
     else:
         lb = meand
-        cv.line(letter2,(0,meand),(w,meand),(255,0,0),2)
+        cv2.line(letter2, (0, meand), (w, meand), (255, 0, 0), 2)
 
     plt.imshow(letter2)
+    plt.title("Baselines")
+    plt.axis('off')
     plt.show()
+
     return meanu, lb
 ##******************************************************************************###
 
 # In[histogram]:
 ##*******************************************************************************###
-def histogram(letter2, upper_baseline, lower_baseline):
+def histogram(letter2, upper_baseline, lower_baseline, w):
     ##------------Making Histograms (Default)------------------------######
     cropped = letter2[upper_baseline:lower_baseline,0:w]
     plt.imshow(cropped)
@@ -207,7 +199,7 @@ def histogram(letter2, upper_baseline, lower_baseline):
 
 # In[Visualize]:
 ##*******************************************************************************###
-def visualize(letter2, upper_baseline, lower_baseline, min_pixel_threshold, min_separation_threshold, min_round_letter_threshold):
+def visualize(letter2, letterGray, colcnt, upper_baseline, lower_baseline,min_pixel_threshold, min_separation_threshold, min_round_letter_threshold, h, w):
     seg = []
     seg1 = []
     seg2 = []
@@ -339,7 +331,7 @@ try:
         min_separation_threshold = 35
         min_round_letter_threshold = 190
 
-        seg = visualize(letter2, upper_baseline, lower_baseline, min_pixel_threshold, min_separation_threshold, min_round_letter_threshold)
+        seg = visualize(letter2, upper_baseline, lower_baseline, min_pixel_threshold, min_separation_threshold, min_round_letter_threshold,h,w)
         wordImgList = segmentCharacters(seg,letterGray)
         for i in wordImgList:
             cv.imwrite("/content/drive/MyDrive/CV/result/characters/" + str(counter) +".jpeg",i)
